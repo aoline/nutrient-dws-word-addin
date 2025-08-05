@@ -45,16 +45,25 @@ export class NutrientDWSAPI {
 
         try {
             // Make a simple API call to test the connection
-            const response = await axios.get(`${this.baseUrl}/health`, {
+            // We'll use the build endpoint with minimal data to test authentication
+            const response = await axios.post(`${this.baseUrl}/build`, {
+                parts: [] // Minimal valid request
+            }, {
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
-                    'User-Agent': this.userAgent
+                    'User-Agent': this.userAgent,
+                    'Content-Type': 'application/json'
                 },
                 timeout: 5000
             });
             
             return response.status === 200;
-        } catch (error) {
+        } catch (error: any) {
+            // If we get a 400 error with a proper API response, the key is valid
+            if (error.response && error.response.status === 400 && error.response.data && error.response.data.error) {
+                console.log('API key is valid, got expected error response:', error.response.data.error);
+                return true;
+            }
             console.error('API connection test failed:', error);
             return false;
         }
