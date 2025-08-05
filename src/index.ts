@@ -35,6 +35,23 @@ function initializeAddin() {
 }
 
 function loadSavedApiKey() {
+    // First try to load from environment variables
+    if (typeof process !== 'undefined' && process.env && process.env.NUTRIENT_DWS_API_KEY) {
+        const envApiKey = process.env.NUTRIENT_DWS_API_KEY;
+        const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
+        const envInfo = document.getElementById('env-info');
+        if (apiKeyInput) {
+            apiKeyInput.value = envApiKey;
+            nutrientAPI.setApiKey(envApiKey);
+            uiHelper.showStatus('API key loaded from environment', 'success');
+            if (envInfo) {
+                envInfo.style.display = 'block';
+            }
+            return;
+        }
+    }
+    
+    // Fall back to localStorage
     const savedApiKey = localStorage.getItem('nutrient-dws-api-key');
     if (savedApiKey) {
         const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;

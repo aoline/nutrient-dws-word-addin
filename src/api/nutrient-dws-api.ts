@@ -23,6 +23,13 @@ export class NutrientDWSAPI {
     private baseUrl: string = 'https://api.nutrient.io';
     private userAgent: string = 'NutrientDWSWordAddin/1.0.0';
 
+    constructor() {
+        // Try to load API key from environment variables first
+        if (typeof process !== 'undefined' && process.env && process.env.NUTRIENT_DWS_API_KEY) {
+            this.apiKey = process.env.NUTRIENT_DWS_API_KEY;
+        }
+    }
+
     setApiKey(apiKey: string): void {
         this.apiKey = apiKey;
     }

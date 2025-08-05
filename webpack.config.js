@@ -1,6 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+const env = dotenv.config({ path: '../.env' }).parsed || {};
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -49,6 +54,9 @@ module.exports = (env, argv) => {
             to: 'manifest.xml'
           }
         ]
+      }),
+      new webpack.DefinePlugin({
+        'process.env': JSON.stringify(env)
       })
     ],
     devServer: {
