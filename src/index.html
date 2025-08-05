@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nutrient DWS Document Processor</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <header>
+            <h1>Nutrient DWS</h1>
+            <p>Document Processing Add-in</p>
+        </header>
+
+        <div id="api-key-section" class="section">
+            <h2>API Configuration</h2>
+            <div class="form-group">
+                <label for="api-key">Nutrient DWS API Key:</label>
+                <input type="password" id="api-key" placeholder="Enter your API key">
+                <button id="save-api-key" class="btn btn-primary">Save</button>
+            </div>
+            <div id="api-status" class="status"></div>
+        </div>
+
+        <div id="document-actions" class="section">
+            <h2>Document Actions</h2>
+            
+            <div class="action-group">
+                <h3>Convert Document</h3>
+                <div class="form-group">
+                    <label for="output-format">Output Format:</label>
+                    <select id="output-format">
+                        <option value="pdf">PDF</option>
+                        <option value="docx">DOCX</option>
+                        <option value="png">PNG</option>
+                        <option value="jpg">JPEG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                </div>
+                <button id="convert-doc" class="btn btn-secondary">Convert Document</button>
+            </div>
+
+            <div class="action-group">
+                <h3>Digital Signing</h3>
+                <div class="form-group">
+                    <label for="signer-name">Signer Name:</label>
+                    <input type="text" id="signer-name" placeholder="Enter signer name">
+                </div>
+                <div class="form-group">
+                    <label for="sign-reason">Reason:</label>
+                    <input type="text" id="sign-reason" placeholder="Enter signing reason">
+                </div>
+                <div class="form-group">
+                    <label for="sign-location">Location:</label>
+                    <input type="text" id="sign-location" placeholder="Enter location">
+                </div>
+                <button id="sign-doc" class="btn btn-secondary">Sign Document</button>
+            </div>
+
+            <div class="action-group">
+                <h3>Document Processing</h3>
+                <div class="form-group">
+                    <label for="processing-instructions">Processing Instructions:</label>
+                    <textarea id="processing-instructions" placeholder="Enter processing instructions (e.g., 'add watermark', 'rotate pages', 'extract text')"></textarea>
+                </div>
+                <button id="process-doc" class="btn btn-secondary">Process Document</button>
+            </div>
+        </div>
+
+        <div id="status-section" class="section">
+            <h2>Status</h2>
+            <div id="status-messages"></div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        #container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .action-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+
+        .action-group h3 {
+            margin-top: 0;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #106ebe;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        #status-messages {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .status-message {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html> 
